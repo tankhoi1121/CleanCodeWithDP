@@ -2,6 +2,7 @@
 using CleanCodeWithDP.Stragery;
 using System;
 using System.Collections.Generic;
+using MySqlConnector;
 
 namespace CleanCodeWithDP
 {
@@ -12,12 +13,13 @@ namespace CleanCodeWithDP
     using CompositePattern;
     using StrategyVer2;
     using CleanCodeWithDP.Decorator;
-    using System.ComponentModel.Design;
     using CleanCodeWithDP.State;
     using AbstractFactoryVer2;
     using Template;
     using TemplateVer2;
+    using TemplateVer3;
     using Adapter;
+    using ChainOfReposibility;
 
     class Program
     {
@@ -39,6 +41,7 @@ namespace CleanCodeWithDP
             }
             return _platform;
         }
+        private static MySqlConnection _sqlConnection;
         static void Main(string[] args)
         {
             AbstractPlatform _platform = configurationPlatform();
@@ -239,6 +242,40 @@ namespace CleanCodeWithDP
             var xmlConverter = new XmlConverter();
             var adapter = new XmlToJsonAdapter(xmlConverter);
             adapter.ConvertXMLToJson();
+
+            Console.WriteLine("===========================================================================");
+            Console.WriteLine("================================== Template Ver 3 ===============================");
+            Console.WriteLine("-------------------------------------------------------------------------------");
+
+            DAO @object = new Person();
+            @object.Connect();
+            @object.GetAll();
+            @object.Process();
+            @object.Disconnect();
+
+
+            Console.WriteLine("===========================================================================");
+            Console.WriteLine("================================== ChainOfReposibility ===============================");
+            Console.WriteLine("-------------------------------------------------------------------------------");
+            // Setup Chain of Responsibility
+
+            Approver larry = new Director();
+            Approver sam = new VicePresident();
+            Approver tammy = new President();
+
+            larry.SetSuccessor(sam);
+            sam.SetSuccessor(tammy);
+
+            // Generate and process purchase requests
+
+            Purchase p = new Purchase(2034, 350.00, "Assets");
+            larry.ProcessRequest(p);
+
+            p = new Purchase(2035, 32590.10, "Project X");
+            larry.ProcessRequest(p);
+
+            p = new Purchase(2036, 122100.00, "Project Y");
+            larry.ProcessRequest(p);
         }
 
         public static void addCarToPoliceDatabase(FlyweightFactory factory, Car car)
